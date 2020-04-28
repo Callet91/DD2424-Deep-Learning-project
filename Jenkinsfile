@@ -5,6 +5,7 @@ pipeline {
       steps {
         sh 'echo "hi"'
         sh 'pwd'
+        sh 'flake8'
       }
     }
 
