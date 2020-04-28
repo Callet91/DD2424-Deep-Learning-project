@@ -4,6 +4,7 @@ pipeline {
     stage('flake8') {
       steps {
         sh 'echo "hi"'
+        sh 'pwd'
       }
     }
 
