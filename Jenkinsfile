@@ -3,8 +3,7 @@ pipeline {
   stages {
     stage('flake8') {
       steps {
-        sh 'echo "hi"'
-        sh 'pwd'
+        echo 'Start flake8...'
         sh 'flake8'
       }
     }
