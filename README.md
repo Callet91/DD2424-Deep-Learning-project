@@ -26,6 +26,15 @@ In order to ensure that the code works as intended, a Test Driven Development (T
 
 To measure the performance of the network, the network will be trained, validated and tested on separate datasets from a subset of the ImageNet. The results will be compared with the results achieved by students from the course cs231 held at Stanford.  
 
+## Getting started (easy way)
+
+- Download and install Docker
+- Clone this repo to where you like to put it 
+- Run the following command to start the development environment: 
+```sh
+docker run -it --rm --name tf -v ~/path/to/the/repo:/notebooks -p 8888:8888 -p 6006:6006 tensorflow/tensorflow:latest-gpu-jupyter
+```
+
 ## References
 Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton, ImageNet Classification with Deep Convolutional Neural Networks, 2012, 
 https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
