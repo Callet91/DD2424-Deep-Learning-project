@@ -1,3 +1,4 @@
-import numpy as np
+print("hello")
+print("hello again")
 
-#Data generator goes here
+# Data generator goes here
