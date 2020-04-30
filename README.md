@@ -28,12 +28,19 @@ To measure the performance of the network, the network will be trained, validate
 
 ## Getting started (easy way)
 
-- Download and install Docker
-- Clone this repo to where you like to put it 
-- Run the following command to start the development environment: 
+- Download and install Docker on your OS https://docs.docker.com/get-docker/
+- Download and install VS code https://code.visualstudio.com/
+- In VS code, make sure you install the Docker exstension by opening the extensions view `(Ctrl+Shift+X)`, search for docker and select Docker extension authored by Microsoft.
+- Clone this repo.
 ```sh
-docker run -it --rm --name tf -v ~/path/to/the/repo:/notebooks -p 8888:8888 -p 6006:6006 tensorflow/tensorflow:latest-gpu-jupyter
+cd /path/to/your/directory && git clone https://github.com/Callet91/DD2424-project.git
 ```
+- Open the repo with VS code
+```sh
+cd /path/to/your/directory && code .
+```
+- Now, in VS code, open the remote container settings `(CTRL+SHIFT+P)` and then search for the option `Remote-Containers: Reopen in Container` and select this option. 
+- PS. The first time you open the container it can take some time due to that the container needs to created from the image. 
 
 ## References
 Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton, ImageNet Classification with Deep Convolutional Neural Networks, 2012, 
