@@ -1,0 +1,22 @@
+################################################################
+#
+# Python package requirements for the DD2424-project:
+# https://github.com/Callet91/DD2424-project.git
+#
+# Note that
+#
+################################################################
+# Basic packages used in many of the tutorials.
+
+numpy
+scipy
+jupyter
+matplotlib
+Pillow
+scikit-learn
+pre-commit
+
+################################################################
+# TensorFlow v.2.1 and above include both CPU and GPU versions.
+
+tensorflow
