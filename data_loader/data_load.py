@@ -29,7 +29,7 @@ def __decode_img(img):
     """Decode jpg, convert to float [0.1] and resize img to 256x256."""
     img = tf.image.decode_jpeg(img, channels=3)
     img = tf.image.convert_image_dtype(img, tf.float32)
-    return tf.image.resize(img, [256, 256])
+    return tf.image.resize(img, [224, 224])
 
 
 def __process_img(img_path):
