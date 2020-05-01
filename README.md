@@ -43,7 +43,7 @@ cd /path/to/your/directory && code .
 - PS. The first time you open the container it can take some time due to that the container needs to be created from the image.
 - Open a new terminal in VS code and download the tiny-imagenet-200 dataset.
 ```sh
-cd /workspaces/DD2424-project/dataset/ && wget http://cs231n.stanford.edu/tiny-imagenet-200.zip && unzip -q tiny-imagenet-200.zip && rm tiny-imagenet-200.zip
+mkdir /workspaces/DD2424-project/dataset && cd /workspaces/DD2424-project/dataset/ && wget http://cs231n.stanford.edu/tiny-imagenet-200.zip && unzip -q tiny-imagenet-200.zip && rm tiny-imagenet-200.zip
 ```
 
 ## References
