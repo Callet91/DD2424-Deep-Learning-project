@@ -30,7 +30,7 @@ To measure the performance of the network, the network will be trained, validate
 
 - Download and install Docker on your OS https://docs.docker.com/get-docker/
 - Download and install VS code https://code.visualstudio.com/
-- In VS code, make sure you install the Docker exstension by opening the extensions view `(Ctrl+Shift+X)`, search for docker and select Docker extension authored by Microsoft.
+- In VS code, make sure you install the Docker exstension by opening the extensions view `(Ctrl+Shift+X)`, search for docker and select Docker extension authored by Microsoft. Also, make sure you install the Remote-container exstension when you are at it. 
 - Clone this repo.
 ```sh
 cd /path/to/your/directory && git clone https://github.com/Callet91/DD2424-project.git
