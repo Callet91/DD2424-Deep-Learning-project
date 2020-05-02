@@ -17,6 +17,7 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requ
 
 RUN sudo apt install -y unzip
 
+CMD pre-commit install
 # [Optional] Uncomment this section to install additional packages.
 #
 # ENV DEBIAN_FRONTEND=noninteractive
