@@ -31,13 +31,13 @@ Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton, ImageNet Classification wit
 https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
 
  ILSVRC: imagenet large scale visual recognition competition. http://www.image-net.org/ challenges/LSVRC/
- 
+
  # Getting started
 
-## Option 1: Using Docker 
+## Option 1: Using Docker
 - Download and install Docker on your OS https://docs.docker.com/get-docker/
 - Download and install VS code https://code.visualstudio.com/
-- In VS code, make sure you install the Docker exstension by opening the extensions view `(Ctrl+Shift+X)`, search for docker and select Docker extension authored by Microsoft. Also, make sure you install the Remote-container exstension when you are at it. 
+- In VS code, make sure you install the Docker exstension by opening the extensions view `(Ctrl+Shift+X)`, search for docker and select Docker extension authored by Microsoft. Also, make sure you install the Remote-container exstension when you are at it.
 - Clone this repo.
 ```sh
 cd /path/to/your/directory && git clone https://github.com/Callet91/DD2424-project.git
@@ -57,37 +57,41 @@ mkdir /workspaces/DD2424-project/dataset && cd /workspaces/DD2424-project/datase
 ```sh
 cd /path/to/your/directory && git clone https://github.com/Callet91/DD2424-project.git
 ```
-- Make sure you have installed `Python3`, `pip3` and `virtualenv`. 
+- Make sure you have installed `Python3`, `pip3` and `virtualenv`.
 - If you have not everything installed run the following commands.
 - - Ubuntu/WSL:
-```sh 
+```sh
 sudo apt update
 sudo apt install python3-dev python3-pip
 sudo pip3 install -U virtualenv
 ```
 - - MacOS:
-```sh 
+```sh
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
 brew update
 brew install python  # Python 3
 sudo pip3 install -U virtualenv
 ```
-- Create a new virtual environment 
-- - Ubuntu/WSL/MacOS: 
-```sh 
+- Create a new virtual environment
+- - Ubuntu/WSL/MacOS:
+```sh
 virtualenv --system-site-packages -p python3 ./venv
 ```
-- Activate the virtual environment: 
-```sh 
+- Activate the virtual environment:
+```sh
 source ./venv/bin/activate
 ```
-- Run setup script for installing dependencies and packages. 
-```sh 
+- Run setup script for installing dependencies and packages.
+```sh
 script/setup.sh
 ```
-- Make sure you are in the directory `DD2424-project` and download the tiny-imagenet dataset. 
-```sh 
+- Make sure you are in the directory `DD2424-project` and download the tiny-imagenet dataset.
+```sh
 mkdir dataset && cd dataset && wget http://cs231n.stanford.edu/tiny-imagenet-200.zip && unzip tiny-imagenet-200.zip && rm tiny-imagenet-200.zip
 ```
+Calle calle calle
 
+Hej då hej
+
+Nej jag gillar inte bannaner
