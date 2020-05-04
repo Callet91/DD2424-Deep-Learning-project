@@ -1,6 +1,8 @@
 import tensorflow as tf
 import pathlib
 
+# import numpy as np
+
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 CLASS_NAMES = None
 
@@ -40,6 +42,7 @@ def __process_img(img_path):
 
 
 def loadDataset(path, n_img):
+    """Loads  dataset  """
     # TODO: Manage data_dir and delete print
     data_dir = pathlib.Path(path)
     print(data_dir)
