@@ -34,7 +34,7 @@ https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutiona
  
  # Getting started
 
-## Using Docker: 
+## Option 1: Using Docker 
 - Download and install Docker on your OS https://docs.docker.com/get-docker/
 - Download and install VS code https://code.visualstudio.com/
 - In VS code, make sure you install the Docker exstension by opening the extensions view `(Ctrl+Shift+X)`, search for docker and select Docker extension authored by Microsoft. Also, make sure you install the Remote-container exstension when you are at it. 
@@ -52,7 +52,7 @@ cd /path/to/your/directory && code .
 ```sh
 mkdir /workspaces/DD2424-project/dataset && cd /workspaces/DD2424-project/dataset/ && wget http://cs231n.stanford.edu/tiny-imagenet-200.zip && unzip tiny-imagenet-200.zip && rm tiny-imagenet-200.zip
 ```
-## Using venv: 
+## Option 2: Using venv
 - Clone this repo.
 ```sh
 cd /path/to/your/directory && git clone https://github.com/Callet91/DD2424-project.git
@@ -78,7 +78,7 @@ sudo pip3 install -U virtualenv
 ```sh 
 virtualenv --system-site-packages -p python3 ./venv
 ```
-- Activate virtual environment: 
+- Activate the virtual environment: 
 ```sh 
 source ./venv/bin/activate
 ```
@@ -91,4 +91,3 @@ script/setup.sh
 mkdir dataset && cd dataset && wget http://cs231n.stanford.edu/tiny-imagenet-200.zip && unzip tiny-imagenet-200.zip && rm tiny-imagenet-200.zip
 ```
 
-Done!
