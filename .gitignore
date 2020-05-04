@@ -4,6 +4,9 @@
 ### Tiny imagenet ###
 dataset
 
+### Logger ###
+*.log
+
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
 # website: http://jupyter.org/
