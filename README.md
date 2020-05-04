@@ -90,8 +90,3 @@ script/setup.sh
 ```sh
 mkdir dataset && cd dataset && wget http://cs231n.stanford.edu/tiny-imagenet-200.zip && unzip tiny-imagenet-200.zip && rm tiny-imagenet-200.zip
 ```
-Calle calle calle
-
-Hej då hej
-
-Nej jag gillar inte bannaner
