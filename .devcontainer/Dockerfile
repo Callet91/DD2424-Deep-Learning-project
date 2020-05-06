@@ -9,7 +9,6 @@
 ARG VARIANT="3"
 FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 
-ENV PYTHONPATH="/workspaces/DD2424-project"
 # [Optional] If your requirements rarely change, uncomment this section to add them to the image.
 
 COPY requirements.txt /tmp/pip-tmp/
@@ -17,6 +16,9 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requ
    && rm -rf /tmp/pip-tmp
 
 RUN sudo apt install -y unzip
+
+
+ENV PYTHONPATH="/workspaces/DD2424-project"
 
 CMD pre-commit install
 # [Optional] Uncomment this section to install additional packages.

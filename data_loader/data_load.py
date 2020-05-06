@@ -1,29 +1,19 @@
-import tensorflow as tf
+"""Data loader V.1."""
 import pathlib
+import tensorflow as tf
+from utils.logger import _LOGGER
 
 # import numpy as np
 
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 CLASS_NAMES = None
-
-"""Data loader V.1."""
-
-
-def __get_list_ds(path_dataset, n_img=100):
-    """Get list of paths to images."""
-    img_paths = [None] * n_img
-    list_ds = tf.data.Dataset.list_files(path_dataset)
-
-    for f in list_ds.take(n_img):
-        img_paths.append(f)
-
-    return img_paths
+VALID_DATASETS = ["test", "train", "val"]
 
 
 def __get_label(img_path):
     """Get image label."""
     img_label = tf.strings.split(img_path, "/")
-    # TODO: Fix CLASS NAMES
+    # TODO: Fix CLASS NAMES # pylint: disable=fixme
     return img_label[-2] == CLASS_NAMES
 
 
@@ -35,20 +25,34 @@ def __decode_img(img):
 
 
 def __process_img(img_path):
+    """Get label and decode image."""
     label = __get_label(img_path)
     img = tf.io.read_file(img_path)
     img = __decode_img(img)
     return img, label
 
 
-def loadDataset(path, n_img):
-    """Loads  dataset  """
-    # TODO: Manage data_dir and delete print
-    data_dir = pathlib.Path(path)
-    print(data_dir)
-    path_dataset = path + "/*/images/*"
-    # TODO: Manage img_path and delete pir
-    img_paths = __get_list_ds(path_dataset, n_img)
-    print(img_paths)
+def load_dataset(path=None, name_dataset=None, n_img=10):
+    """Loads  dataset."""
 
-    return 1
+    assert path is not None
+    assert name_dataset is not None
+
+    path = path + "/" + name_dataset
+
+    _LOGGER.info("In loadDataset: Path is set to %s", path)
+    data_dir = pathlib.Path(path)
+    list_ds = tf.data.Dataset.list_files(str(data_dir / "*/images/*.JPEG"))
+
+    for fimg in list_ds.take(n_img):
+        print(fimg.numpy())
+
+    labeled_ds = list_ds.map(__process_img, num_parallel_calls=AUTOTUNE)
+
+    for image, label in labeled_ds.take(n_img):
+        print("Image shape: ", image.numpy().shape)
+        print("Label: ", label.numpy())
+
+    print(CLASS_NAMES)
+
+    return 0
