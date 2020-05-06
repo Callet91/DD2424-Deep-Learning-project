@@ -6,6 +6,7 @@ dataset
 
 ### Logger ###
 *.log
+logs
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
