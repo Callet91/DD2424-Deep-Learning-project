@@ -3,7 +3,9 @@ import pathlib
 import json as js
 import numpy as np  # pylint: disable=import-error
 import tensorflow as tf
-import matplotlib.pyplot as plt  # pylint: disable=import-error
+
+# TODO: Uncomment when fix show_batch # pylint: disable=fixme
+# import matplotlib.pyplot as plt  # pylint: disable=import-error
 from utils.logger import _LOGGER
 
 
@@ -42,7 +44,9 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         """Get image label."""
         _LOGGER.info("In __get_train_label: img_path = %s", str(img_path))
         img_label = tf.strings.split(img_path, "/")
-        return img_label[-3] == self.CLASS_NAMES
+        img_label = img_label[-3] == self.CLASS_NAMES
+        img_label = tf.where(img_label)
+        return img_label
 
     def __process_train_img(self, img_path):
         """Get label and decode image."""
@@ -82,7 +86,6 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         except AssertionError as error:
             raise error
 
-        # Set data directory, list dataset and set CLASS_NAMES.
         data_dir = pathlib.Path(self.TRAIN_PATH)
         list_ds = tf.data.Dataset.list_files(str(data_dir / "*/images/*.JPEG"))
 
@@ -102,6 +105,7 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
 
     def __get_label_val(self, img_label):
         """Get image label."""
+
         return img_label == self.CLASS_NAMES
 
     def __load_val(self):
@@ -116,18 +120,18 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
             file_path_split = file_path.split("/")
             file_path_split = file_path_split[-1]
             val_dirs.append(file_path)
-            val_class.append(self.VAL_NAMES[file_path_split])
+            index = np.where(self.CLASS_NAMES == self.VAL_NAMES[file_path_split])
+            val_class.append(index)
 
         list_dir = tf.data.Dataset.from_tensor_slices(val_dirs)
-        list_class = tf.data.Dataset.from_tensor_slices(val_class)
+        label = tf.data.Dataset.from_tensor_slices(val_class)
 
-        label = list_class.map(self.__get_label_val)
-        label = label.batch(32)
+        label = label.batch(self.BATCH_SIZE)
         label = label.prefetch(buffer_size=self.AUTOTUNE)
         label = next(iter(label))
 
         img = list_dir.map(self.__decode_img)
-        img = img.batch(32)
+        img = img.batch(self.BATCH_SIZE)
         img = img.prefetch(buffer_size=self.AUTOTUNE)
         img = next(iter(img))
 
@@ -135,14 +139,15 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
 
     def get_data(self, dataset="train"):
         """Get images and labels from from dataset."""
-        if dataset == "train":
+        if dataset == "val":
             img, label = self.__load_val()
 
-        elif dataset == "val":
+        elif dataset == "train":
             img, label = self.__load_train()
 
         return img, label
 
+    # TODO: Fix one hot rep for val and train batch for printing # pylint: disable=fixme
     def show_batch(self, dataset="train"):
         """Display a 5x5 grid of random img from dataset."""
         if dataset == "train":
@@ -153,12 +158,17 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
             img = self.VAL_IMG_BATCH
             label = self.VAL_LABEL_BATCH
 
-        plt.figure(figsize=(10, 10))
-        for n_img in range(25):
-            axis = plt.subplot(5, 5, n_img + 1)
-            _LOGGER.info(axis)
-            plt.imshow(img[n_img])
-            title = self.CLASS_NAMES[label[n_img] is True][0].title()
-            plt.title(title)
-            plt.axis("off")
-        plt.show()
+        print(img)
+        print(label)
+
+        # plt.figure(figsize=(10, 10))
+        # for n_img in range(25):
+        #     axis = plt.subplot(5, 5, n_img + 1)
+        #     _LOGGER.info(axis)
+        #     plt.imshow(img[n_img])
+        #     title = self.CLASS_NAMES[if label[n_img] is True][
+        #         0
+        #     ].title()  # pylint: disable=singleton-comparison
+        #     plt.title(title)
+        #     plt.axis("off")
+        # plt.show()
