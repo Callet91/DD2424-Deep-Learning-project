@@ -2,7 +2,7 @@
     "train_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/train/",
     "val_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/val/",
     "test_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/test/",
-    "val_names_json": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/val/val_annotations.json",
+    "val_names_json": "/workspaces/DD2424-project/configs/val_annotations.json",
     "batch_size": 32,
     "image_height": 224,
     "image_width": 224,
