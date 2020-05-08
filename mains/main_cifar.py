@@ -28,11 +28,9 @@ def main():
     alex.set_train_data(train_images, train_labels)
     alex.set_test_data(test_images, test_labels)
 
-    alex.generate_model()
-    alex.summary()
-    alex.start_train()
-
-    # test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
+    # alex.generate_model()
+    # alex.summary()
+    # alex.start_train()
 
 
 if __name__ == "__main__":
