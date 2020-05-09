@@ -3,9 +3,7 @@ import pathlib
 import json as js
 import numpy as np  # pylint: disable=import-error
 import tensorflow as tf
-
-# TODO: Uncomment when fix show_batch # pylint: disable=fixme
-# import matplotlib.pyplot as plt  # pylint: disable=import-error
+import matplotlib.pyplot as plt  # pylint: disable=import-error
 from utils.logger import _LOGGER
 
 
@@ -19,156 +17,121 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         self.AUTOTUNE = tf.data.experimental.AUTOTUNE
 
         self.VAL_NAMES = js.load(open(self.CONFIG["val_names_json"]))
-        self.CLASS_NAMES = None
+        self.CLASS_NAMES = self.__generate_class_names()
 
-        self.TRAIN_PATH = self.CONFIG["train_path"]
-        self.VAL_PATH = self.CONFIG["val_path"]
-        self.TEST_PATH = self.CONFIG["test_path"]
-        self.VALID_DATASETS = ["train", "val", "test"]
+        self.NAME_DICT = self.__generate_dict()
 
-        self.IMAGE_HEIGHT = self.CONFIG["image_height"]
-        self.IMAGE_WIDTH = self.CONFIG["image_width"]
-        self.BATCH_SIZE = self.CONFIG["batch_size"]
+    def __generate_dict(self):
+        """Generate dictionary of names."""
+        name_dict = {}
 
-        self.TRAIN_IMG_BATCH, self.TRAIN_LABEL_BATCH = self.__load_train()
-        self.VAL_IMG_BATCH, self.VAL_LABEL_BATCH = self.__load_val()
+        with open(self.CONFIG["words_path"]) as text_file:
+
+            for line in text_file:
+                line_split = line.strip().split("\t")
+                words = line_split[1].strip().split()
+                name_dict[line_split[0]] = words[0]
+
+        return name_dict
+
+    def __generate_class_names(self):
+        """Generate the class names."""
+        data_dir = pathlib.Path(self.CONFIG["train_path"])
+        class_names = np.array([str(item.name) for item in data_dir.glob("*")])
+        return class_names
 
     def __decode_img(self, img_path):
-        """Decode JPEG, convert to float [0.1] and resize img to 224x224."""
-        img = tf.io.read_file(img_path)
-        img = tf.image.decode_jpeg(img, channels=3)
+        """Decode JPEG, convert to float [0,1] and resize img."""
+        img = tf.image.decode_jpeg(img_path, channels=self.CONFIG["channels"])
         img = tf.image.convert_image_dtype(img, tf.float32)
-        return tf.image.resize(img, [self.IMAGE_HEIGHT, self.IMAGE_WIDTH])
+        return tf.image.resize(
+            img, [self.CONFIG["image_height"], self.CONFIG["image_width"]]
+        )
 
-    def __get_train_label(self, img_path):
-        """Get image label."""
-        _LOGGER.info("In __get_train_label: img_path = %s", str(img_path))
-        img_label = tf.strings.split(img_path, "/")
-        img_label = img_label[-3] == self.CLASS_NAMES
-        img_label = tf.where(img_label)
-        return img_label
-
-    def __process_train_img(self, img_path):
-        """Get label and decode image."""
-        _LOGGER.info("In __process__img: Path = %s", str(img_path))
-        label = self.__get_train_label(img_path)
-        img = self.__decode_img(img_path)
+    def __parse_data(self, filename, label):
+        img_string = tf.io.read_file(filename)
+        img = self.__decode_img(img_string)
         return img, label
-
-    def __prepare_train_data(self, dataset, cache=True, shuffle_buffer_size=1000):
-        """Cache and shuffle dataset."""
-        if cache:
-            if isinstance(cache, str):
-                dataset.cache(cache)
-            else:
-                dataset.cache()
-
-        dataset.shuffle(buffer_size=shuffle_buffer_size)
-        dataset = dataset.repeat()
-        dataset = dataset.batch(self.BATCH_SIZE)
-        dataset = dataset.prefetch(buffer_size=self.AUTOTUNE)
-
-        return dataset
 
     def __load_train(self):
         """Loads training dataset."""
 
-        try:
-            assert self.TRAIN_PATH is not None
-        except AssertionError as error:
-            raise error
+        data_dir = pathlib.Path(self.CONFIG["train_path"])
 
-        # Check path
-        path_split = self.TRAIN_PATH.split("/")
+        list_dir = []
+        list_label = []
 
-        try:
-            assert path_split[-2] in self.VALID_DATASETS
-        except AssertionError as error:
-            raise error
+        # Get file paths with corresponding label
+        for file_path in list(data_dir.glob("*/images/*.JPEG")):
+            file_path = str(file_path)
+            file_path_split = file_path.split("/")
+            file_path_split = file_path_split[-3]
+            list_dir.append(file_path)
+            index = np.where(self.CLASS_NAMES == file_path_split)
+            list_label.append(index)
 
-        data_dir = pathlib.Path(self.TRAIN_PATH)
-        list_ds = tf.data.Dataset.list_files(str(data_dir / "*/images/*.JPEG"))
-
-        self.CLASS_NAMES = np.array([item.name for item in data_dir.glob("*")])
-
-        # Process all data and map image with label
-        labeled_ds = list_ds.map(
-            self.__process_train_img, num_parallel_calls=self.AUTOTUNE
+        # Create, shuffle, map, batch and prefetch dataset
+        tf_dir = tf.constant(list_dir)
+        tf_class = tf.constant(list_label)
+        labeled_ds = tf.data.Dataset.from_tensor_slices((tf_dir, tf_class))
+        labeled_ds = labeled_ds.shuffle(buffer_size=len(list_dir))
+        labeled_ds = labeled_ds.map(
+            self.__parse_data, num_parallel_calls=self.CONFIG["batch_size"]
         )
-
-        # Prepare data for training
-        dataset = self.__prepare_train_data(labeled_ds)
-
-        img_batch, label_batch = next(iter(dataset))
-
-        return img_batch, label_batch
-
-    def __get_label_val(self, img_label):
-        """Get image label."""
-
-        return img_label == self.CLASS_NAMES
+        labeled_ds = labeled_ds.batch(self.CONFIG["batch_size"])
+        labeled_ds = labeled_ds.prefetch(buffer_size=self.CONFIG["batch_size"])
+        return labeled_ds
 
     def __load_val(self):
+        """Load valuation data."""
+        data_dir = pathlib.Path(self.CONFIG["val_path"])
 
-        data_dir = pathlib.Path(self.VAL_PATH)
+        list_dir = []
+        list_label = []
 
-        val_dirs = []
-        val_class = []
-
+        # Get file paths with corresponding label
         for file_path in list(data_dir.glob("images/*.JPEG")):
             file_path = str(file_path)
             file_path_split = file_path.split("/")
             file_path_split = file_path_split[-1]
-            val_dirs.append(file_path)
             index = np.where(self.CLASS_NAMES == self.VAL_NAMES[file_path_split])
-            val_class.append(index)
+            list_dir.append(file_path)
+            list_label.append(index)
 
-        list_dir = tf.data.Dataset.from_tensor_slices(val_dirs)
-        label = tf.data.Dataset.from_tensor_slices(val_class)
+        # Create, shuffle, map, batch and prefetch dataset
+        tf_dir = tf.constant(list_dir)
+        tf_class = tf.constant(list_label)
+        labeled_ds = tf.data.Dataset.from_tensor_slices((tf_dir, tf_class))
+        labeled_ds = labeled_ds.shuffle(buffer_size=len(list_dir))
+        labeled_ds = labeled_ds.map(
+            self.__parse_data, num_parallel_calls=self.CONFIG["batch_size"]
+        )
+        labeled_ds = labeled_ds.batch(self.CONFIG["batch_size"])
+        labeled_ds = labeled_ds.prefetch(buffer_size=self.CONFIG["batch_size"])
 
-        label = label.batch(self.BATCH_SIZE)
-        label = label.prefetch(buffer_size=self.AUTOTUNE)
-        label = next(iter(label))
-
-        img = list_dir.map(self.__decode_img)
-        img = img.batch(self.BATCH_SIZE)
-        img = img.prefetch(buffer_size=self.AUTOTUNE)
-        img = next(iter(img))
-
-        return img, label
+        return labeled_ds
 
     def get_data(self, dataset="train"):
         """Get images and labels from from dataset."""
         if dataset == "val":
-            img, label = self.__load_val()
+            labeled_ds = self.__load_val()
 
         elif dataset == "train":
-            img, label = self.__load_train()
+            labeled_ds = self.__load_train()
 
-        return img, label
+        return labeled_ds
 
-    # TODO: Fix one hot rep for val and train batch for printing # pylint: disable=fixme
     def show_batch(self, dataset="train"):
-        """Display a 5x5 grid of random img from dataset."""
-        if dataset == "train":
-            img = self.TRAIN_IMG_BATCH
-            label = self.TRAIN_LABEL_BATCH
+        """Display a random batch."""
+        if dataset == "val":
+            image_batch, label_batch = next(iter(self.__load_train()))
+        else:
+            image_batch, label_batch = next(iter(self.__load_val()))
 
-        elif dataset == "val":
-            img = self.VAL_IMG_BATCH
-            label = self.VAL_LABEL_BATCH
-
-        print(img)
-        print(label)
-
-        # plt.figure(figsize=(10, 10))
-        # for n_img in range(25):
-        #     axis = plt.subplot(5, 5, n_img + 1)
-        #     _LOGGER.info(axis)
-        #     plt.imshow(img[n_img])
-        #     title = self.CLASS_NAMES[if label[n_img] is True][
-        #         0
-        #     ].title()  # pylint: disable=singleton-comparison
-        #     plt.title(title)
-        #     plt.axis("off")
-        # plt.show()
+        plt.figure(figsize=(10, 10))
+        for index in range(25):
+            axis = plt.subplot(5, 5, index + 1)
+            print(axis)
+            plt.imshow(image_batch[index])
+            plt.title(self.NAME_DICT[self.CLASS_NAMES[int(label_batch[index])]])
+            plt.axis("off")

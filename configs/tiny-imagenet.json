@@ -1,14 +1,10 @@
 {
     "train_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/train/",
     "val_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/val/",
-    "test_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/test/",
     "val_names_json": "/workspaces/DD2424-project/configs/val_annotations.json",
+    "words_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/words.txt",
     "batch_size": 32,
-    "image_height": 227,
-    "image_width": 227,
-    "num_epochs": 10,
-    "num_iter_per_epoch": 10,
-    "learning_rate": 0.001,
-    "state_size": [784],
-    "max_to_keep":5
+    "image_height": 64,
+    "image_width": 64,
+    "channels": 3
   }
