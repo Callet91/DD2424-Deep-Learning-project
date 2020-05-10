@@ -13,19 +13,16 @@ from models.alexnet import AlexNet  # pylint: disable=import-error
 
 def main():
     """Main function."""
+    config = open("/workspaces/DD2424-project/configs/tiny-imagenet.json")
 
-    file = open("/workspaces/DD2424-project/configs/tiny-imagenet.json")
-    dataset = Dataset(file)
-    (train_images, train_labels) = dataset.get_data(dataset="train")
-    (val_images, val_labels) = dataset.get_data(dataset="val")
-    dataset.show_batch(dataset="train")
+    dataset = Dataset(config)
+    ds_train = dataset.get_data("train")
 
-    file = open("/workspaces/DD2424-project/configs/example.json")
-    alex = AlexNet(file)
+    config_alex = open("/workspaces/DD2424-project/configs/example.json")
 
-    alex.set_train_data(train_images, train_labels)
-    alex.set_test_data(val_images, val_labels)
-    # pylint: disable=duplicate-code
+    alex = AlexNet(config_alex)
+    alex.set_train_data(ds_train)
+
     alex.generate_model()
     alex.summary()
     alex.start_train()
