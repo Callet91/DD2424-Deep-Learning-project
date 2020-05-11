@@ -16,12 +16,24 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         self.CONFIG = js.load(config)
         self.AUTOTUNE = tf.data.experimental.AUTOTUNE
 
-        self.VAL_NAMES = js.load(open(self.CONFIG["val_names_json"]))
+        self.VAL_NAMES = self.__generate_val_dict()
         self.CLASS_NAMES = self.__generate_class_names()
 
-        self.NAME_DICT = self.__generate_dict()
+        self.NAME_DICT = self.__generate_names_dict()
 
-    def __generate_dict(self):
+    def __generate_val_dict(self):
+        """Generates dict of val images."""
+        val_dict = {}
+
+        with open(self.CONFIG["val_names"]) as text_file:
+
+            for line in text_file:
+                line_split = line.strip().split("\t")
+                val_dict[line_split[0]] = line_split[1].strip()
+
+        return val_dict
+
+    def __generate_names_dict(self):
         """Generate dictionary of names."""
         name_dict = {}
 
@@ -70,9 +82,26 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
             index = np.where(self.CLASS_NAMES == file_path_split)
             list_label.append(index)
 
+        list_dir = np.array(list_dir)
+        list_label = np.array(list_label)
+
+        try:
+            assert self.CONFIG["num_class"] > 200
+        except AssertionError:
+            print(
+                "The desired number of classes exceeds 200. Changing num_class to 200."
+            )
+            self.CONFIG["num_class"] = None
+
+        if self.CONFIG["num_class"] is None:
+            tf_dir = tf.constant(list_dir)
+            tf_class = tf.constant(list_label)
+        else:
+            tf_dir = tf.constant(list_dir[: self.CONFIG["num_class"] * 500 - 1])
+            tf_class = tf.constant(list_label[: self.CONFIG["num_class"] * 500 - 1])
+
         # Create, shuffle, map, batch and prefetch dataset
-        tf_dir = tf.constant(list_dir)
-        tf_class = tf.constant(list_label)
+
         labeled_ds = tf.data.Dataset.from_tensor_slices((tf_dir, tf_class))
         labeled_ds = labeled_ds.shuffle(buffer_size=len(list_dir))
         labeled_ds = labeled_ds.map(
@@ -131,7 +160,7 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         plt.figure(figsize=(10, 10))
         for index in range(25):
             axis = plt.subplot(5, 5, index + 1)
-            print(axis)
             plt.imshow(image_batch[index])
             plt.title(self.NAME_DICT[self.CLASS_NAMES[int(label_batch[index])]])
             plt.axis("off")
+            print(axis)
