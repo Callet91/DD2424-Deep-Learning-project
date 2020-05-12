@@ -4,8 +4,8 @@
     "val_names_json": "/workspaces/DD2424-project/configs/val_annotations.json",
     "words_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/words.txt",
     "val_names": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/val/val_annotations.txt",
-    "num_class": 1,
-    "batch_size": 32,
+    "num_class": 10,
+    "batch_size": 64,
     "image_height": 64,
     "image_width": 64,
     "channels": 3

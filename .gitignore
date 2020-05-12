@@ -1,6 +1,9 @@
 # Created by https://www.gitignore.io/api/venv,python,pycharm+all,jupyternotebooks
 # Edit at https://www.gitignore.io/?templates=venv,python,pycharm+all,jupyternotebooks
 
+## vscode
+.vscode
+
 ### Tiny imagenet ###
 dataset
 

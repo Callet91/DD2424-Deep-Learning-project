@@ -5,6 +5,7 @@ import numpy as np  # pylint: disable=import-error
 import tensorflow as tf
 import matplotlib.pyplot as plt  # pylint: disable=import-error
 from utils.logger import _LOGGER
+from tensorflow.keras.utils import to_categorical
 
 
 class Dataset:  # pylint: disable=too-many-instance-attributes
@@ -50,7 +51,25 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         """Generate the class names."""
         data_dir = pathlib.Path(self.CONFIG["train_path"])
         class_names = np.array([str(item.name) for item in data_dir.glob("*")])
+
+        try:
+            assert self.CONFIG["num_class"] <= 200
+        except AssertionError:
+            print(
+                "The desired number of classes exceeds 200. Changing num_class to 200."
+            )
+            self.CONFIG["num_class"] = 200
+
+        # class_names = class_names[: self.CONFIG["num_class"]]
+
         return class_names
+
+    def __one_hot_encoding(self, label):
+        # parts = tf.strings.split(label, " ")
+        # part = parts[0] == self.CLASS_NAMES
+        # part = tf.dtypes.cast(part, tf.int32)
+        label = to_categorical(label, self.CONFIG["num_class"], dtype="float32")
+        return label
 
     def __decode_img(self, img_path):
         """Decode JPEG, convert to float [0,1] and resize img."""
@@ -61,6 +80,7 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         )
 
     def __parse_data(self, filename, label):
+        # label = self.__one_hot_encoding(label)
         img_string = tf.io.read_file(filename)
         img = self.__decode_img(img_string)
         return img, label
@@ -78,30 +98,31 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
             file_path = str(file_path)
             file_path_split = file_path.split("/")
             file_path_split = file_path_split[-3]
-            list_dir.append(file_path)
             index = np.where(self.CLASS_NAMES == file_path_split)
-            list_label.append(index)
-
-        list_dir = np.array(list_dir)
-        list_label = np.array(list_label)
+            list_dir.append(file_path)
+            list_label.append(index[0])
 
         try:
-            assert self.CONFIG["num_class"] > 200
+            assert self.CONFIG["num_class"] <= 200
         except AssertionError:
             print(
                 "The desired number of classes exceeds 200. Changing num_class to 200."
             )
-            self.CONFIG["num_class"] = None
+            self.CONFIG["num_class"] = 200
 
-        if self.CONFIG["num_class"] is None:
-            tf_dir = tf.constant(list_dir)
-            tf_class = tf.constant(list_label)
-        else:
-            tf_dir = tf.constant(list_dir[: self.CONFIG["num_class"] * 500 - 1])
-            tf_class = tf.constant(list_label[: self.CONFIG["num_class"] * 500 - 1])
+        list_label = np.array(
+            to_categorical(
+                list_label[: self.CONFIG["num_class"] * 500],
+                self.CONFIG["num_class"],
+                dtype="float32",
+            )
+        )
+        tf_class = tf.constant(list_label)
+
+        list_dir = np.array(list_dir)
+        tf_dir = tf.constant(list_dir[: self.CONFIG["num_class"] * 500])
 
         # Create, shuffle, map, batch and prefetch dataset
-
         labeled_ds = tf.data.Dataset.from_tensor_slices((tf_dir, tf_class))
         labeled_ds = labeled_ds.shuffle(buffer_size=len(list_dir))
         labeled_ds = labeled_ds.map(
@@ -152,7 +173,7 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
 
     def show_batch(self, dataset="train"):
         """Display a random batch."""
-        if dataset == "val":
+        if dataset == "train":
             image_batch, label_batch = next(iter(self.__load_train()))
         else:
             image_batch, label_batch = next(iter(self.__load_val()))
@@ -161,6 +182,8 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         for index in range(25):
             axis = plt.subplot(5, 5, index + 1)
             plt.imshow(image_batch[index])
-            plt.title(self.NAME_DICT[self.CLASS_NAMES[int(label_batch[index])]])
+            plt.title(
+                self.NAME_DICT[self.CLASS_NAMES[label_batch[index] is True][0]]
+            )  # pylint: disable=singleton-comparison
             plt.axis("off")
             print(axis)
