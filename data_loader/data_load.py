@@ -52,35 +52,18 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         data_dir = pathlib.Path(self.CONFIG["train_path"])
         class_names = np.array([str(item.name) for item in data_dir.glob("*")])
 
-        try:
-            assert self.CONFIG["num_class"] <= 200
-        except AssertionError:
-            print(
-                "The desired number of classes exceeds 200. Changing num_class to 200."
-            )
-            self.CONFIG["num_class"] = 200
-
-        # class_names = class_names[: self.CONFIG["num_class"]]
-
         return class_names
-
-    def __one_hot_encoding(self, label):
-        # parts = tf.strings.split(label, " ")
-        # part = parts[0] == self.CLASS_NAMES
-        # part = tf.dtypes.cast(part, tf.int32)
-        label = to_categorical(label, self.CONFIG["num_class"], dtype="float32")
-        return label
 
     def __decode_img(self, img_path):
         """Decode JPEG, convert to float [0,1] and resize img."""
         img = tf.image.decode_jpeg(img_path, channels=self.CONFIG["channels"])
         img = tf.image.convert_image_dtype(img, tf.float32)
-        return tf.image.resize(
+        img = tf.image.resize(
             img, [self.CONFIG["image_height"], self.CONFIG["image_width"]]
         )
+        return img
 
     def __parse_data(self, filename, label):
-        # label = self.__one_hot_encoding(label)
         img_string = tf.io.read_file(filename)
         img = self.__decode_img(img_string)
         return img, label
@@ -110,6 +93,7 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
             )
             self.CONFIG["num_class"] = 200
 
+        # Convert label array to numpy array for one hot encoding
         list_label = np.array(
             to_categorical(
                 list_label[: self.CONFIG["num_class"] * 500],
@@ -117,12 +101,15 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
                 dtype="float32",
             )
         )
-        tf_class = tf.constant(list_label)
 
+        # Convert dir array to numpy array
         list_dir = np.array(list_dir)
+
+        # Convert to tensor labels and dir arrays to tensors
+        tf_class = tf.constant(list_label)
         tf_dir = tf.constant(list_dir[: self.CONFIG["num_class"] * 500])
 
-        # Create, shuffle, map, batch and prefetch dataset
+        # Create dataset from tensors and shuffle, map, batch and prefetch
         labeled_ds = tf.data.Dataset.from_tensor_slices((tf_dir, tf_class))
         labeled_ds = labeled_ds.shuffle(buffer_size=len(list_dir))
         labeled_ds = labeled_ds.map(
@@ -146,7 +133,17 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
             file_path_split = file_path_split[-1]
             index = np.where(self.CLASS_NAMES == self.VAL_NAMES[file_path_split])
             list_dir.append(file_path)
-            list_label.append(index)
+            list_label.append(index[0])
+
+        # Convert representation array to numpy array with one hot encoding
+        list_label = np.array(to_categorical(list_label, 200, dtype="float32"))
+
+        # Convert dir array to numpy array
+        list_dir = np.array(list_dir)
+
+        # Convert to tensor
+        tf_class = tf.constant(list_label)
+        tf_dir = tf.constant(list_dir)
 
         # Create, shuffle, map, batch and prefetch dataset
         tf_dir = tf.constant(list_dir)
@@ -182,8 +179,12 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         for index in range(25):
             axis = plt.subplot(5, 5, index + 1)
             plt.imshow(image_batch[index])
+            print(len(self.CLASS_NAMES))
+            print(len(label_batch[index].numpy()))
             plt.title(
-                self.NAME_DICT[self.CLASS_NAMES[label_batch[index] is True][0]]
+                self.NAME_DICT[
+                    self.CLASS_NAMES[np.where(label_batch[index].numpy() == 1.0)][0]
+                ]
             )  # pylint: disable=singleton-comparison
             plt.axis("off")
             print(axis)
