@@ -32,7 +32,9 @@ https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutiona
 
  ILSVRC: imagenet large scale visual recognition competition. http://www.image-net.org/ challenges/LSVRC/
 
- # Getting started
+# Setting up dev environment
+
+If you like to start develop on your own computer, there are two neat options for doing so: 
 
 ## Option 1: Using Docker
 - Download and install Docker on your OS https://docs.docker.com/get-docker/
@@ -59,13 +61,15 @@ cd /path/to/your/directory && git clone https://github.com/Callet91/DD2424-proje
 ```
 - Make sure you have installed `Python3`, `pip3` and `virtualenv`.
 - If you have not everything installed run the following commands.
-- - Ubuntu/WSL:
+
+Ubuntu/WSL:
 ```sh
 sudo apt update
 sudo apt install python3-dev python3-pip
 sudo pip3 install -U virtualenv
 ```
-- - MacOS:
+
+MacOS:
 ```sh
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
@@ -73,8 +77,10 @@ brew update
 brew install python  # Python 3
 sudo pip3 install -U virtualenv
 ```
+
 - Create a new virtual environment
-- - Ubuntu/WSL/MacOS:
+
+Ubuntu/WSL/MacOS:
 ```sh
 virtualenv --system-site-packages -p python3 ./venv
 ```
@@ -90,3 +96,59 @@ script/setup.sh
 ```sh
 mkdir dataset && cd dataset && wget http://cs231n.stanford.edu/tiny-imagenet-200.zip && unzip tiny-imagenet-200.zip && rm tiny-imagenet-200.zip
 ```
+# Run the code on GCP or on computer with CUDA
+
+## On GCP 
+- Go to [Google Cloud Platform](https://cloud.google.com/), set up an account and start a new project.
+- Creat a new deep learning VM (see picture) and press launch. 
+
+- Set up the VM as you want it. Make sure you select the framework TensorFlow Enterprise 2.1 (CUDA 10.1) and that you check the GPU box.
+
+- Open the CLI for your VM and clone this repo: 
+
+```sh
+git clone https://github.com/Callet91/DD2424-project.git
+```
+- Install [Docker](https://docs.docker.com/engine/install/ubuntu/)
+
+- Navigate to the repo folder and build the docker image by typing in the following command: 
+```sh
+docker build --tag tf_alexnet .
+```
+
+- When image is done building, run the docker image by typing the following command: 
+```sh
+docker run --gpus all --rm -it -p 8080:8080 tf_alexnet bash
+```
+
+- You have now opened up the container and can run jupyter by typing the following command: 
+jupyter notebook --ip=0.0.0.0 --port=8080 --allow-root
+
+- Go to the prompted page to access jupyter. 
+
+## On local computer
+
+- Make sure you have a CUDA 10.1 installed (Tensorflow 2.1 only works on CUDA 10.1). If you are on Ubuntu, this [tutorial](https://www.iridescent.io/tech-blogs-installing-cuda-the-right-way/) is a good one. 
+
+- Install [Docker](https://docs.docker.com/engine/install/ubuntu/)
+
+- Navigate to the repo folder and build the docker image by typing in the following command: 
+```sh
+docker build --tag tf_alexnet .
+```
+
+- When the image is done building, run the docker image by typing the following command: 
+```sh
+docker run --gpus all --rm -it -p 8080:8080 tf_alexnet bash
+```
+
+- You have now opened up the container and can run jupyter by typing the following command:
+```sh
+jupyter notebook --ip=0.0.0.0 --port=8080 --allow-root
+```
+- Go to the prompted page to access jupyter. 
+
+
+
+
+
