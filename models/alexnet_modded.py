@@ -35,8 +35,8 @@ class AlexNet:
         self.MODEL.add(
             layers.Conv2D(
                 32,
-                (3, 3),
-                strides=1,
+                (11, 11),
+                strides=2,
                 activation=self.CONFIG["activation"],
                 input_shape=(
                     self.CONFIG["image_height"],
@@ -45,14 +45,14 @@ class AlexNet:
                 ),
             )
         )
-        # self.MODEL.add(layers.LayerNormalization())
+        self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
-        # self.MODEL.add(layers.LayerNormalization())
+        self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(
             layers.Conv2D(
                 64,
-                (11, 11),
-                strides=2,
+                (5, 5),
+                strides=1,
                 padding="same",
                 activation=self.CONFIG["activation"],
             )
@@ -61,7 +61,7 @@ class AlexNet:
         self.MODEL.add(
             layers.Conv2D(
                 128,
-                (5, 5),
+                (3, 3),
                 strides=1,
                 padding="same",
                 activation=self.CONFIG["activation"],
