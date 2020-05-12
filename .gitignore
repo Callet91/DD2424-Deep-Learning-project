@@ -1,8 +1,16 @@
 # Created by https://www.gitignore.io/api/venv,python,pycharm+all,jupyternotebooks
 # Edit at https://www.gitignore.io/?templates=venv,python,pycharm+all,jupyternotebooks
 
-## vscode
-.vscode
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
 
 ### Tiny imagenet ###
 dataset
@@ -10,13 +18,6 @@ dataset
 ### Logger ###
 *.log
 logs
-
-### JupyterNotebooks ###
-# gitignore template for Jupyter Notebooks
-# website: http://jupyter.org/
-# notebooks
-# .ipynb_checkpoints
-# */.ipynb_checkpoints/*
 
 # IPython
 profile_default/
