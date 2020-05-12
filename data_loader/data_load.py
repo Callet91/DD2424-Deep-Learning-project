@@ -177,14 +177,11 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
 
         plt.figure(figsize=(10, 10))
         for index in range(25):
-            axis = plt.subplot(5, 5, index + 1)
+            axis = plt.subplot(5, 5, index + 1)  # pylint: disable=unused-variable
             plt.imshow(image_batch[index])
-            print(len(self.CLASS_NAMES))
-            print(len(label_batch[index].numpy()))
             plt.title(
                 self.NAME_DICT[
                     self.CLASS_NAMES[np.where(label_batch[index].numpy() == 1.0)][0]
                 ]
             )  # pylint: disable=singleton-comparison
             plt.axis("off")
-            print(axis)
