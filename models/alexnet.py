@@ -1,7 +1,7 @@
 """Model for AlexNet."""
 import json as js
 import tensorflow as tf
-from tensorflow.keras import layers, models
+from tensorflow.keras import layers, models, optimizers
 
 
 class AlexNet:
@@ -39,7 +39,7 @@ class AlexNet:
         )
         self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
-        self.MODEL.add(layers.LayerNormalization())
+        # self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(
             layers.Conv2D(
                 256,
@@ -70,7 +70,7 @@ class AlexNet:
         )
         self.MODEL.add(
             layers.Conv2D(
-                256,
+                384,
                 (3, 3),
                 strides=1,
                 padding="same",
@@ -83,12 +83,13 @@ class AlexNet:
         self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
         self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
-        self.MODEL.add(layers.Dense(200, activation="softmax"))
+        self.MODEL.add(layers.Dense(200))
 
     def start_train(self):
         """Compile and train model."""
+        sgd = optimizers.SGD(lr=0.01, decay=5e-4, momentum=0.9)
         self.MODEL.compile(
-            optimizer=self.CONFIG["optimizer"],
+            optimizer=sgd,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             metrics=[self.CONFIG["metrics"]],
         )
