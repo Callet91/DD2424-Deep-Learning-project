@@ -1,9 +1,9 @@
-"""Model for AlexNet."""
+"""Model for AlexNet modded."""
 import json as js
 from tensorflow.keras import layers, models, optimizers
 
 
-class AlexNetModded:
+class AlexNet:
     """Class for AlexNet."""
 
     def __init__(self, config):
@@ -38,7 +38,11 @@ class AlexNetModded:
                 (3, 3),
                 strides=1,
                 activation=self.CONFIG["activation"],
-                input_shape=(64, 64, 3),
+                input_shape=(
+                    self.CONFIG["image_height"],
+                    self.CONFIG["image_width"],
+                    self.CONFIG["channels"],
+                ),
             )
         )
         # self.MODEL.add(layers.LayerNormalization())
@@ -46,9 +50,9 @@ class AlexNetModded:
         # self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(
             layers.Conv2D(
-                32,
-                (3, 3),
-                strides=1,
+                64,
+                (11, 11),
+                strides=2,
                 padding="same",
                 activation=self.CONFIG["activation"],
             )
@@ -56,8 +60,8 @@ class AlexNetModded:
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(
             layers.Conv2D(
-                64,
-                (3, 3),
+                128,
+                (5, 5),
                 strides=1,
                 padding="same",
                 activation=self.CONFIG["activation"],
@@ -65,7 +69,7 @@ class AlexNetModded:
         )
         self.MODEL.add(
             layers.Conv2D(
-                64,
+                128,
                 (3, 3),
                 strides=1,
                 padding="same",
@@ -83,11 +87,11 @@ class AlexNetModded:
         )
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(layers.Flatten())
-        self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
         self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
-        self.MODEL.add(layers.Dense(10, activation="softmax"))
+        self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
+        self.MODEL.add(layers.Dense(self.CONFIG["num_class"], activation="softmax"))
 
     def start_train(self):
         """Compile and train model."""

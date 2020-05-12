@@ -21,6 +21,7 @@ repos:
         hooks:
         -   id: pylint
             args:
+            -   --min-similarity-lines=400
             -   --ignored-modules=tensorflow.keras
             -   --ignored-modules=tensorflow
             -   --const-naming-style=UPPER_CASE

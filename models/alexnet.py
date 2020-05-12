@@ -1,6 +1,5 @@
 """Model for AlexNet."""
 import json as js
-import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers
 
 
@@ -13,6 +12,11 @@ class AlexNet:
         self.CONFIG = js.load(config)
         self.TRAIN_DS = None
         self.TEST_DS = None
+        self.OPTIMIZER = optimizers.SGD(
+            lr=self.CONFIG["learning_rate"],
+            decay=self.CONFIG["decay"],
+            momentum=self.CONFIG["momentum"],
+        )
 
     def set_train_data(self, train_ds=None):
         """Set training data."""
@@ -24,7 +28,6 @@ class AlexNet:
 
     def generate_model(self):
         """Generate model according to Alexnet."""
-        # TODO: Fix model according to alexnet # pylint: disable=fixme
         self.MODEL = models.Sequential()
 
         # AlexNet:
@@ -34,12 +37,16 @@ class AlexNet:
                 (11, 11),
                 strides=4,
                 activation=self.CONFIG["activation"],
-                input_shape=(227, 227, 3),
+                input_shape=(
+                    self.CONFIG["image_height"],
+                    self.CONFIG["image_width"],
+                    self.CONFIG["channels"],
+                ),
             )
         )
         self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
-        # self.MODEL.add(layers.LayerNormalization())
+        self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(
             layers.Conv2D(
                 256,
@@ -70,7 +77,7 @@ class AlexNet:
         )
         self.MODEL.add(
             layers.Conv2D(
-                384,
+                256,
                 (3, 3),
                 strides=1,
                 padding="same",
@@ -83,14 +90,13 @@ class AlexNet:
         self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
         self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
-        self.MODEL.add(layers.Dense(200))
+        self.MODEL.add(layers.Dense(self.CONFIG["num_class"], activation="softmax"))
 
     def start_train(self):
         """Compile and train model."""
-        sgd = optimizers.SGD(lr=0.01, decay=5e-4, momentum=0.9)
         self.MODEL.compile(
-            optimizer=sgd,
-            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+            optimizer=self.OPTIMIZER,
+            loss="categorical_crossentropy",
             metrics=[self.CONFIG["metrics"]],
         )
 
