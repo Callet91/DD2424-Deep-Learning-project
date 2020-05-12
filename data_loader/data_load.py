@@ -41,8 +41,8 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         with open(self.CONFIG["words_path"]) as text_file:
 
             for line in text_file:
-                line_split = line.strip().split("\t")
-                words = line_split[1].strip().split()
+                line_split = line.split("\t")
+                words = line_split[1].split(",")
                 name_dict[line_split[0]] = words[0]
 
         return name_dict
@@ -175,7 +175,7 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         else:
             image_batch, label_batch = next(iter(self.__load_val()))
 
-        plt.figure(figsize=(10, 10))
+        plt.figure(figsize=(20, 20))
         for index in range(25):
             axis = plt.subplot(5, 5, index + 1)  # pylint: disable=unused-variable
             plt.imshow(image_batch[index])
