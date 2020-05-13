@@ -1,9 +1,12 @@
 """Model for AlexNet modded."""
+import os
+import datetime
 import json as js
+import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers
 
 
-class AlexNet:
+class AlexNetModded:
     """Class for AlexNet."""
 
     def __init__(self, config):
@@ -28,7 +31,6 @@ class AlexNet:
 
     def generate_model(self):
         """Generate model according to Alexnet."""
-        # TODO: Fix model according to alexnet # pylint: disable=fixme
         self.MODEL = models.Sequential()
 
         # AlexNet:
@@ -51,8 +53,8 @@ class AlexNet:
         self.MODEL.add(
             layers.Conv2D(
                 64,
-                (11, 11),
-                strides=2,
+                (3, 3),
+                strides=1,
                 padding="same",
                 activation=self.CONFIG["activation"],
             )
@@ -60,8 +62,8 @@ class AlexNet:
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(
             layers.Conv2D(
-                128,
-                (5, 5),
+                64,
+                (3, 3),
                 strides=1,
                 padding="same",
                 activation=self.CONFIG["activation"],
@@ -69,7 +71,7 @@ class AlexNet:
         )
         self.MODEL.add(
             layers.Conv2D(
-                128,
+                64,
                 (3, 3),
                 strides=1,
                 padding="same",
@@ -95,13 +97,21 @@ class AlexNet:
 
     def start_train(self):
         """Compile and train model."""
+
+        logdir = os.path.join("logs", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(logdir, histogram_freq=1)
+
         self.MODEL.compile(
             optimizer=self.OPTIMIZER,
             loss="categorical_crossentropy",
             metrics=[self.CONFIG["metrics"]],
         )
 
-        history = self.MODEL.fit(x=self.TRAIN_DS, epochs=self.CONFIG["epochs"])
+        history = self.MODEL.fit(
+            x=self.TRAIN_DS,
+            epochs=self.CONFIG["epochs"],
+            callbacks=[tensorboard_callback],
+        )
         return history
 
     def summary(self):
