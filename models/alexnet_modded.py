@@ -37,8 +37,8 @@ class AlexNetModded:
         self.MODEL.add(
             layers.Conv2D(
                 32,
-                (11, 11),
-                strides=2,
+                (3, 3),
+                strides=1,
                 activation=self.CONFIG["activation"],
                 input_shape=(
                     self.CONFIG["image_height"],
@@ -47,12 +47,10 @@ class AlexNetModded:
                 ),
             )
         )
-        self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
-        self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(
             layers.Conv2D(
-                64,
+                32,
                 (3, 3),
                 strides=1,
                 padding="same",
@@ -89,10 +87,10 @@ class AlexNetModded:
         )
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(layers.Flatten())
-        self.MODEL.add(layers.Dropout(0.5))
         self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
         self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
+        self.MODEL.add(layers.Dropout(0.5))
         self.MODEL.add(layers.Dense(self.CONFIG["num_class"], activation="softmax"))
 
     def start_train(self):
