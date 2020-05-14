@@ -3,7 +3,7 @@ import os
 import datetime
 import json as js
 import tensorflow as tf
-from tensorflow.keras import layers, models, optimizers
+from tensorflow.keras import layers, models, optimizers, regularizers
 
 
 class AlexNetModded:
@@ -45,18 +45,22 @@ class AlexNetModded:
                     self.CONFIG["image_width"],
                     self.CONFIG["channels"],
                 ),
+                kernel_regularizer=regularizers.l2(0.0001),
             )
         )
+        self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(
             layers.Conv2D(
                 32,
-                (3, 3),
+                (5, 5),
                 strides=1,
                 padding="same",
                 activation=self.CONFIG["activation"],
+                kernel_regularizer=regularizers.l2(0.0001),
             )
         )
+        self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(
             layers.Conv2D(
@@ -65,6 +69,7 @@ class AlexNetModded:
                 strides=1,
                 padding="same",
                 activation=self.CONFIG["activation"],
+                kernel_regularizer=regularizers.l2(0.0001),
             )
         )
         self.MODEL.add(
@@ -74,6 +79,7 @@ class AlexNetModded:
                 strides=1,
                 padding="same",
                 activation=self.CONFIG["activation"],
+                kernel_regularizer=regularizers.l2(0.0001),
             )
         )
         self.MODEL.add(
@@ -83,14 +89,27 @@ class AlexNetModded:
                 strides=1,
                 padding="same",
                 activation=self.CONFIG["activation"],
+                kernel_regularizer=regularizers.l2(0.0001),
             )
         )
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(layers.Flatten())
-        self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
-        self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
+        self.MODEL.add(
+            layers.Dense(
+                4096,
+                activation=self.CONFIG["activation"],
+                kernel_regularizer=regularizers.l2(0.0001),
+            )
+        )
         self.MODEL.add(layers.Dropout(0.5))
+        self.MODEL.add(
+            layers.Dense(
+                4096,
+                activation=self.CONFIG["activation"],
+                kernel_regularizer=regularizers.l2(0.0001),
+            )
+        )
         self.MODEL.add(layers.Dense(self.CONFIG["num_class"], activation="softmax"))
 
     def start_train(self):
@@ -105,13 +124,29 @@ class AlexNetModded:
             metrics=[self.CONFIG["metrics"]],
         )
 
-        history = self.MODEL.fit(
-            x=self.TRAIN_DS,
-            epochs=self.CONFIG["epochs"],
-            callbacks=[tensorboard_callback],
-        )
+        if self.TEST_DS is not None:
+            history = self.MODEL.fit(
+                x=self.TRAIN_DS,
+                epochs=self.CONFIG["epochs"],
+                callbacks=[tensorboard_callback],
+                validation_data=self.TEST_DS,
+                shuffle=True,
+            )
+
+        else:
+            history = self.MODEL.fit(
+                x=self.TRAIN_DS,
+                epochs=self.CONFIG["epochs"],
+                callbacks=[tensorboard_callback],
+                shuffle=True,
+            )
         return history
 
     def summary(self):
         """Summay of CNN layers."""
         self.MODEL.summary()
+
+    def evaluate(self):
+        """Evaluate on test dataset."""
+        result = self.MODEL.evaluate(self.TEST_DS)
+        return result

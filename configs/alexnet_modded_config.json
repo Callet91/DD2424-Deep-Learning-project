@@ -3,14 +3,15 @@
     "val_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/val/",
     "words_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/words.txt",
     "val_names": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/val/val_annotations.txt",
-    "num_class": 100,
-    "batch_size": 64,
+    "test_path": "/workspaces/DD2424-project/dataset/tiny-imagenet-200/test/",
+    "num_class": 10,
+    "batch_size": 32,
     "image_height": 64,
     "image_width": 64,
     "channels": 3,
 
 
-    "epochs": 50,
+    "epochs": 10,
     "decay": 0.0005,
     "momentum": 0.9,
     "learning_rate": 0.01,

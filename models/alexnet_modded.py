@@ -15,6 +15,7 @@ class AlexNetModded:
         self.CONFIG = js.load(config)
         self.TRAIN_DS = None
         self.TEST_DS = None
+        self.VAL_DS = None
         self.OPTIMIZER = optimizers.SGD(
             lr=self.CONFIG["learning_rate"],
             decay=self.CONFIG["decay"],
@@ -47,6 +48,7 @@ class AlexNetModded:
                 ),
             )
         )
+        self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(
             layers.Conv2D(
@@ -57,6 +59,7 @@ class AlexNetModded:
                 activation=self.CONFIG["activation"],
             )
         )
+        self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(
             layers.Conv2D(
@@ -87,10 +90,10 @@ class AlexNetModded:
         )
         self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(layers.Flatten())
-        self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
         self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
+        self.MODEL.add(layers.Dense(4096, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dense(self.CONFIG["num_class"], activation="softmax"))
 
     def start_train(self):
@@ -105,13 +108,28 @@ class AlexNetModded:
             metrics=[self.CONFIG["metrics"]],
         )
 
-        history = self.MODEL.fit(
-            x=self.TRAIN_DS,
-            epochs=self.CONFIG["epochs"],
-            callbacks=[tensorboard_callback],
-        )
+        if self.TEST_DS is not None:
+            history = self.MODEL.fit(
+                x=self.TRAIN_DS,
+                epochs=self.CONFIG["epochs"],
+                callbacks=[tensorboard_callback],
+                validation_data=self.TEST_DS,
+            )
+
+        else:
+            history = self.MODEL.fit(
+                x=self.TRAIN_DS,
+                epochs=self.CONFIG["epochs"],
+                callbacks=[tensorboard_callback],
+            )
+
         return history
 
     def summary(self):
         """Summay of CNN layers."""
         self.MODEL.summary()
+
+    def evaluate(self):
+        """Evaluate on test dataset."""
+        result = self.MODEL.evaluate(self.TEST_DS)
+        return result

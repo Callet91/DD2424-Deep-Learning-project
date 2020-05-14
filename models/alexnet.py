@@ -1,5 +1,8 @@
 """Model for AlexNet."""
+import os
+import datetime
 import json as js
+import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers
 
 
@@ -94,13 +97,32 @@ class AlexNet:
 
     def start_train(self):
         """Compile and train model."""
+
+        logdir = os.path.join("logs", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(logdir, histogram_freq=1)
+
         self.MODEL.compile(
             optimizer=self.OPTIMIZER,
             loss="categorical_crossentropy",
             metrics=[self.CONFIG["metrics"]],
         )
 
-        history = self.MODEL.fit(x=self.TRAIN_DS, epochs=self.CONFIG["epochs"])
+        if self.TEST_DS is not None:
+            history = self.MODEL.fit(
+                x=self.TRAIN_DS,
+                epochs=self.CONFIG["epochs"],
+                callbacks=[tensorboard_callback],
+                validation_data=self.TEST_DS,
+                shuffle=True,
+            )
+
+        else:
+            history = self.MODEL.fit(
+                x=self.TRAIN_DS,
+                epochs=self.CONFIG["epochs"],
+                callbacks=[tensorboard_callback],
+                shuffle=True,
+            )
         return history
 
     def summary(self):
