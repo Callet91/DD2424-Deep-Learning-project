@@ -128,6 +128,8 @@ jupyter notebook --ip=0.0.0.0 --port=8080 --allow-root
 
 - Set up the VM as you want it. Make sure you select the framework TensorFlow Enterprise 2.1 (CUDA 10.1) and that you check the GPU box.
 
+- Make your external IP static in GCP
+
 - Open the CLI by pressing SSH for your VM and clone this repo: 
 
 ```sh
