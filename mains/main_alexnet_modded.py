@@ -21,7 +21,7 @@ def main():
     # Train pure alexnet according to configuration file
     alex = AlexNetModded(config_alex)
     alex.set_train_data(ds_train)
-    alex.set_train_data(ds_test)
+    alex.set_test_data(ds_test)
 
     alex.generate_model()
     alex.summary()
