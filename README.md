@@ -22,6 +22,8 @@ The group is aiming for the grade D.
 The initial goal is to successfully set up AlexNet in classifying the images in the ImageNet dataset. The two initial experiments will be to create an average object for each label of the trained network and to measure the accuracy of the system.
 
 ## Measurement of success
+In order to ensure that the code works as intended, a Test Driven Development (TDD) approach will be used. This enables the project members to work in parallel with the development of the code. For the integration part, a simple Continuous Integration (CI) pipeline will be used in Jenkins. This environment will enable both parallel development and ensure that each separate part of the code works as intended and that integration of every part works as well.
+
 To measure the performance of the network, the network will be trained, validated and tested on separate datasets from a subset of the ImageNet. The results will be compared with the results achieved by students from the course cs231 held at Stanford.
 
 ## References
@@ -118,6 +120,35 @@ jupyter notebook --ip=0.0.0.0 --port=8080 --allow-root
 
 - Open the notebook folder and open the notebook "alexnet"
 
+# Run the code on GCP
+
+## On GCP 
+- Go to [Google Cloud Platform](https://cloud.google.com/), set up an account and start a new project.
+- Creat a new deep learning VM and press launch. 
+
+- Set up the VM as you want it. Make sure you select the framework TensorFlow Enterprise 2.1 (CUDA 10.1) and that you check the GPU box.
+
+- Open the CLI by pressing SSH for your VM and clone this repo: 
+
+```sh
+git clone https://github.com/Callet91/DD2424-project.git
+```
+- Install [Docker](https://docs.docker.com/engine/install/ubuntu/)
+
+- Navigate to the repo folder and build the docker image by typing in the following command: 
+```sh
+docker build --tag tf_alexnet .
+```
+
+- When image is done building, run the docker image by typing the following command: 
+```sh
+docker run --gpus all --rm -it -p 8080:8080 tf_alexnet bash
+```
+
+- You have now opened up the container and can run jupyter by typing the following command: 
+jupyter notebook --ip=0.0.0.0 --port=8080 --allow-root
+
+- Go to the prompted page to access jupyter. 
 
 
 
