@@ -4,7 +4,6 @@ import json as js
 import numpy as np  # pylint: disable=import-error
 import tensorflow as tf
 import matplotlib.pyplot as plt  # pylint: disable=import-error
-from utils.logger import _LOGGER
 from tensorflow.keras.utils import to_categorical
 
 
@@ -13,7 +12,6 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
 
     def __init__(self, config):
         """Initialize."""
-        _LOGGER.info("Initialize Dataset...")
         self.CONFIG = js.load(config)
         self.AUTOTUNE = tf.data.experimental.AUTOTUNE
 
@@ -175,9 +173,9 @@ class Dataset:  # pylint: disable=too-many-instance-attributes
         else:
             image_batch, label_batch = next(iter(self.__load_val()))
 
-        plt.figure(figsize=(20, 20))
-        for index in range(25):
-            axis = plt.subplot(5, 5, index + 1)  # pylint: disable=unused-variable
+        plt.figure(figsize=(9, 9))
+        for index in range(9):
+            axis = plt.subplot(3, 3, index + 1)  # pylint: disable=unused-variable
             plt.imshow(image_batch[index])
             plt.title(
                 self.NAME_DICT[
