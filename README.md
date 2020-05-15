@@ -149,12 +149,7 @@ docker build --tag tf_alexnet .
 
 - When image is done building, run the docker image by typing the following command: 
 ```sh
-docker run --gpus all --rm -it -p 8080:8080 tf_alexnet bash
-```
-
-- You have now opened up the container and can run jupyter by typing the following command: 
-```sh
-jupyter notebook --ip=0.0.0.0 --port=8080 --allow-root
+docker run --gpus all --rm -it --name tf -v ${PWD}:/workspaces/DD2424-project -p 8888:8888 -p 6060:6060 tf_alexnet
 ```
 
 - Go to the prompted page to access jupyter. 
