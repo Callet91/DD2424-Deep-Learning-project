@@ -22,8 +22,6 @@ The group is aiming for the grade D.
 The initial goal is to successfully set up AlexNet in classifying the images in the ImageNet dataset. The two initial experiments will be to create an average object for each label of the trained network and to measure the accuracy of the system.
 
 ## Measurement of success
-In order to ensure that the code works as intended, a Test Driven Development (TDD) approach will be used. This enables the project members to work in parallel with the development of the code. For the integration part, a simple Continuous Integration (CI) pipeline will be used in Jenkins. This environment will enable both parallel development and ensure that each separate part of the code works as intended and that integration of every part works as well.
-
 To measure the performance of the network, the network will be trained, validated and tested on separate datasets from a subset of the ImageNet. The results will be compared with the results achieved by students from the course cs231 held at Stanford.
 
 ## References
