@@ -155,7 +155,9 @@ docker run --gpus all --rm -it -p 8080:8080 tf_alexnet bash
 ```
 
 - You have now opened up the container and can run jupyter by typing the following command: 
+```sh
 jupyter notebook --ip=0.0.0.0 --port=8080 --allow-root
+```
 
 - Go to the prompted page to access jupyter. 
 
