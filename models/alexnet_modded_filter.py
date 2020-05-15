@@ -36,7 +36,7 @@ class AlexNetModded:
         # AlexNet:
         self.MODEL.add(
             layers.Conv2D(
-                96,
+                128,
                 (3, 3),
                 strides=1,
                 activation=self.CONFIG["activation"],
@@ -48,7 +48,7 @@ class AlexNetModded:
             )
         )
         self.MODEL.add(layers.LayerNormalization())
-        self.MODEL.add(layers.MaxPooling2D(pool_size=(2, 2), strides=1))
+        self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(layers.LayerNormalization())
         self.MODEL.add(
             layers.Conv2D(
@@ -59,7 +59,7 @@ class AlexNetModded:
                 activation=self.CONFIG["activation"],
             )
         )
-        self.MODEL.add(layers.MaxPooling2D(pool_size=(2, 2), strides=1))
+        self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
         self.MODEL.add(
             layers.Conv2D(
                 128,
@@ -90,9 +90,9 @@ class AlexNetModded:
         self.MODEL.add(layers.MaxPooling2D(pool_size=(2, 2), strides=1))
         self.MODEL.add(layers.Flatten())
         self.MODEL.add(layers.Dropout(0.5))
-        self.MODEL.add(layers.Dense(256, activation=self.CONFIG["activation"]))
+        self.MODEL.add(layers.Dense(512, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
-        self.MODEL.add(layers.Dense(256, activation=self.CONFIG["activation"]))
+        self.MODEL.add(layers.Dense(512, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dense(self.CONFIG["num_class"], activation="softmax"))
 
     def start_train(self):
