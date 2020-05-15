@@ -59,7 +59,7 @@ class AlexNetModded:
                 activation=self.CONFIG["activation"],
             )
         )
-        self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=2))
+        self.MODEL.add(layers.MaxPooling2D(pool_size=(3, 3), strides=1))
         self.MODEL.add(
             layers.Conv2D(
                 128,
