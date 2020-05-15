@@ -90,9 +90,9 @@ class AlexNetModded:
         self.MODEL.add(layers.MaxPooling2D(pool_size=(2, 2), strides=1))
         self.MODEL.add(layers.Flatten())
         self.MODEL.add(layers.Dropout(0.5))
-        self.MODEL.add(layers.Dense(400, activation=self.CONFIG["activation"]))
+        self.MODEL.add(layers.Dense(512, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dropout(0.5))
-        self.MODEL.add(layers.Dense(400, activation=self.CONFIG["activation"]))
+        self.MODEL.add(layers.Dense(512, activation=self.CONFIG["activation"]))
         self.MODEL.add(layers.Dense(self.CONFIG["num_class"], activation="softmax"))
 
     def start_train(self):
