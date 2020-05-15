@@ -17,7 +17,6 @@ dataset
 
 ### Logger ###
 *.log
-logs
 
 # IPython
 profile_default/
