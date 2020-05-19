@@ -16,7 +16,7 @@ The group will build up an architecture similar to AlexNet from scratch using Te
 ## Goals and grade
 Since all of the group members have approximately the same level of coding experience, all the group members have similar goals with regards to acquiring knowledge from the project. The goal is to get a deeper understanding of Convolutional neural networks and the architecture of AlexNet. Furthermore, the members will learn how to implement training using Tensorflow and python as a programming language. As a group projects, each member will also get more experience in coding the system together.
 
-The group is aiming for the grade D.
+The group is aiming for the grade C.
 
 ## Initial experiments
 The initial goal is to successfully set up AlexNet in classifying the images in the ImageNet dataset. The two initial experiments will be to create an average object for each label of the trained network and to measure the accuracy of the system.
@@ -122,7 +122,7 @@ jupyter notebook --ip=0.0.0.0 --port=8080 --allow-root
 
 ## On GCP 
 - Go to [Google Cloud Platform](https://cloud.google.com/), set up an account and start a new project.
-- Creat a new deep learning VM and press launch. 
+- Create a new deep learning VM and press launch. 
 
 - Set up the VM as you want it. Make sure you select the framework TensorFlow Enterprise 2.1 (CUDA 10.1) and that you check the GPU box.
 
